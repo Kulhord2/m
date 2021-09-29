@@ -1,0 +1,145 @@
+#:import authorization Authorization.authorization
+# source of information https://www.youtube.com/watch?v=l8Imtec4ReQ&t=3615s
+SManager:
+    SLogin:
+    STop:
+    SSettings:
+    SOrders:
+    SEmployer:
+<SLogin>:
+    name: "Login"
+    LoginWidget1:
+
+<STop>:
+    name: "Top"
+    BoxLayoutExample:
+
+<SSettings>:
+    name: "Settings"
+
+<SOrders>:
+    name: "Orders"
+
+<SEmployer>:
+    name: "Employer"
+
+
+#PageLayoutExample:
+# перекидка страниц
+<PageLayoutExample@PageLayout>
+    LoginWidget1:
+    BoxLayoutExample:
+    BoxLayoutExample:
+# прокрутка
+<ScrollViewExample@ScrollView>:
+    BoxLayoutExample:
+        # size_hint: 1, None
+        # height: self.minimum_height
+# плитки
+<StackLayoutExample>:
+    # варианты ориентации
+    # lr - с лева на право, rl - с права на лево
+    # tb - с верху в низ, bt - с низу в верх
+    # пример: left-right top-bottom  (lr-tb)
+    # варианты "vertical" "horizontal"
+    # orientation: "vertical"
+    # отступы сверху, справа, снизу, слева
+    # padding: ("20dp", "20dp", "20dp", "20dp")
+    # отступы между кнопками или лейбами
+    # spacing: "20dp","20dp"
+
+<AnchorLayoutExample>:
+    Button:
+        text: "0"
+        size_hint: .1, .1
+    # увеличение текста
+    Slider:
+        min: 0
+        max: 100
+        value: 25
+        orientation: "vertical"
+    # загрузка данных
+    ProgressBar:
+        max: 100
+#    # текст для записи чего-то
+#    TextInput:
+#        multiline: false
+#        on_text_validate:
+
+
+<BoxLayoutExample>:
+    orientation: "vertical"
+    BoxLayout:
+        size_hint: 1, .05
+        Label:
+            text: root.connect_gps_status
+            # size_hint: .1, .1
+    BoxLayout:
+        size_hint: 1, .05
+        Label:
+            #text: root.connect_gps_status
+            text: root.weather_now
+            # size_hint: .1, .1
+        Label:
+            text: root.connect_status_internet
+            # size_hint: .1, .1
+        Label:
+            text: root.connect_status_server
+            # size_hint: .1, .1
+        Label:
+            text: root.battery_status
+            # size_hint: .1, .1
+    BoxLayout:
+        size_hint: 1, .1
+        spacing: "2dp"
+        Button:
+            background_color: 0.2, 0.7, 0.7, 0.25
+            text: root.employee_shift
+            on_press: root.employee_click()
+            # size_hint: 0.5, None
+            # height: "60dp"
+            # x, center_x,right
+            # y, center_y, top
+            # pos_hint: {"right": 0.75}
+        Button:
+            background_color: 0.2, 0.7, 0.7, 0.25
+            text:"Обновить координаты"
+            on_press: root.update_gps()
+            # size_hint: 1, 1
+            # color: 0, -1, 0, 1
+    BoxLayout:
+        Label:
+            text:"Необходимо приехать по адресу:"
+            # size_hint: .5, .2
+<LoginWidget1>:
+    id: login1
+    canvas.before:
+        Rectangle:
+            size:self.size
+            #source: "Image/kivy.jpg"
+            source: "Image/kivy2.jpeg"
+
+    Label:
+        text: "Введите номер телефона"
+        pos_hint: {"center_x": 0.5,"center_y": 0.8}
+        size_hint: .2, 0.05
+
+    TextInput:
+        multiline: False
+        pos_hint: {"center_x": 0.5,"center_y": 0.75}
+        size_hint: .2, 0.05
+        on_text : root.def_write_login(self)
+    Label:
+        text: "Введите пароль"
+        pos_hint: {"center_x": 0.5,"center_y": 0.65}
+        size_hint: .2, 0.05
+    TextInput:
+        multiline: False
+        pos_hint: {"center_x": 0.5,"center_y": 0.6}
+        size_hint: .2, 0.05
+        on_text : root.def_write_password(self)
+    Button:
+        text: "Войти"
+        on_press: root.login_logistics()
+        pos_hint: {"center_x": 0.5,"center_y": 0.2}
+        size_hint: .2, 0.1
