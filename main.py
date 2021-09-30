@@ -104,12 +104,15 @@ class LoginWidget1(RelativeLayout):
         from SQLite.SQLite_CRUD_Querry.SQLite_Update import sqlite_update_only
         login = sqlite_read_col_in_table("settings", "login")
         password = sqlite_read_col_in_table("settings", "password")
-        if login == '' and password == '':
-            if self.write_login != '':
-                login = self.write_login
-            if self.write_password != '':
-                password = self.write_password
-        # print(login, password)
+        response = API.send_request('/is_register', {"staffId": login, "password": password})
+
+        if str(response) != 'true':
+            if login != self.write_login and password != self.write_password:
+                if self.write_login != '':
+                    login = self.write_login
+                if self.write_password != '':
+                    password = self.write_password
+        print(f"Login {login}\nPassword {password}")
         response = API.send_request('/is_register', {"staffId": login, "password": password})
         # print(response)
         if response != "True":
@@ -148,11 +151,11 @@ class BoxLayoutExample(BoxLayout):
             if SQLite_Read.sqlite_count("settings") != 0:
                 login = SQLite_Read.sqlite_read_col_in_table("settings", "login")
                 password = SQLite_Read.sqlite_read_col_in_table("settings", "password")
-                # response = API.get_token('/is_register', login, password)
-                # print(login, password)
-                # print("resp", response)
-                # if response == "True":
-                #     DelMiaApp.get_running_app().root.current = "Top"
+                response = API.get_token('/is_register', login, password)
+                print(login, password)
+                print("resp", response)
+                if response == "True":
+                    DelMiaApp.get_running_app().root.current = "Top"
 
     def update_token(self, dt):
         from SQLite.SQLite_CRUD_Querry.SQLite_Update import sqlite_update_table

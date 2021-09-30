@@ -58,7 +58,7 @@ def send_request(address: str, data: str):
     response = requests.post(f'{get_server_ip()}{address}', data=json.dumps(data), headers=get_headers_4_token())
     # response = requests.put(f'{get_server_ip()}{address}', data=data, headers=get_headers_4_token())
     print(response.status_code)
-    print(response.text)
+    print(f"response: {response.text}")
     print(time.time())
     return response.text
 
