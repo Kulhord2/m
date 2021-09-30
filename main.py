@@ -2,7 +2,6 @@
 import datetime
 import ipaddress
 import platform
-
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.properties import StringProperty, Clock
@@ -11,17 +10,16 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.stacklayout import StackLayout
 from kivy.uix.relativelayout import RelativeLayout
-
-from kivy.uix.widget import Widget
+# from kivy.uix.widget import Widget
 from kivy.core.audio import SoundLoader
 from plyer import battery
-from plyer import tts
+# from plyer import tts
 from plyer import gps
 import requests
 import random
-
 from API import API
-
+from kivy.config import Config
+Config.set('kivy','log_dir','/storage/emulated/0/Download')
 Builder.load_file("Authorization/authorization.kv")
 
 
