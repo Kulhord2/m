@@ -108,9 +108,33 @@ SManager:
             # size_hint: 1, 1
             # color: 0, -1, 0, 1
     BoxLayout:
+        orientation: "vertical"
+        pos_hint: {"center_y": 0.09}
+        size_hint: 1, .3
+        BoxLayout:
+            Label:
+                text: root.time_delivery
+        BoxLayout:
+            Label:
+                text: root.inform
+        BoxLayout:
+            Label:
+                text: root.order_number
+        BoxLayout:
+            Label:
+                text: root.type_address
+    BoxLayout:
+        size_hint: 1, .5
+        spacing: "2dp"
         Label:
-            text:"Необходимо приехать по адресу:"
-            # size_hint: .5, .2
+            text:""
+        Label:
+            text:""
+        Button:
+            size_hint: 1, .5
+            background_color: 0.2, 0.7, 0.7, 0.25
+            text: "Доставлено"
+            on_press: root.employee_click()
 <LoginWidget1>:
     id: login1
     canvas.before:

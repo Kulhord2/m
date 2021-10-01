@@ -1,6 +1,7 @@
 # source of information https://www.youtube.com/watch?v=l8Imtec4ReQ&t=3615s
 import datetime
 import ipaddress
+import json
 import platform
 from kivy.app import App
 from kivy.lang import Builder
@@ -19,7 +20,11 @@ import requests
 import random
 from API import API
 from kivy.config import Config
-Config.set('kivy','log_dir','/storage/emulated/0/Download')
+
+from API.API import get_data
+from SQLite.SQLite_CRUD_Querry import SQLite_Read
+
+Config.set('kivy', 'log_dir', '/storage/emulated/0/Download')
 Builder.load_file("Authorization/authorization.kv")
 
 
@@ -29,16 +34,17 @@ def default_settings():
     if sqlite_count("settings") == 0:
         settings = dict()
         settings.update({'id': 1,
-                         'login': '1',
-                         'password': '2',
+                         'login': '',
+                         'password': '',
                          'text_size': 0.3,
                          'Check_internet': "http://www.google.com",
-                         'Connect_login': "111",
-                         'Connect_password': "222",
+                         'Connect_login': "LogisticsApp",
+                         'Connect_password': "GSFHrs6itd6$%#$Ewg54e",
                          'Address1': "62.80.175.116",
                          'Address2': "80.91.189.6",
                          'Address3': "88.198.110.32",
-                         'Address4': " "})
+                         'Address4': " ",
+                         'DriverId': 0})
         print(settings)
         sqlite_write_table("settings", settings)
 
@@ -94,28 +100,50 @@ class LoginWidget1(RelativeLayout):
 
     def def_write_password(self, widget):
         self.write_password = widget.text
-        print(self.write_password)
+
+    def LId(self, all_driver: dict, staff: str):
+        logisticsId = ''
+        all_driver = json.loads(all_driver)
+        for lst in all_driver:
+            for key, values in lst.items():
+                if key == "driverId":
+                    logisticsId = values
+                if (key == "staffId") and (values == staff):
+                    return logisticsId
 
     def login_logistics(self):
-        print('press')
+        # print('press')
         from SQLite.SQLite_CRUD_Querry.SQLite_Read import sqlite_read_col_in_table
-        from SQLite.SQLite_CRUD_Querry.SQLite_Update import sqlite_update_only
+        from SQLite.SQLite_CRUD_Querry.SQLite_Update import sqlite_update_only, sqlite_update_table
         login = sqlite_read_col_in_table("settings", "login")
         password = sqlite_read_col_in_table("settings", "password")
-        response = API.send_request('/is_register', {"staffId": login, "password": password})
-
-        if str(response) != 'true':
+        # print(f"1\nLogin {login}\nPassword {password}")
+        response = API.login_request('/is_register', login, password)
+        print(f"Login {response}")
+        if response != 'true':
             if login != self.write_login and password != self.write_password:
                 if self.write_login != '':
                     login = self.write_login
                 if self.write_password != '':
                     password = self.write_password
-        print(f"Login {login}\nPassword {password}")
-        response = API.send_request('/is_register', {"staffId": login, "password": password})
-        # print(response)
-        if response != "True":
+        # print(f"2\nLogin {login}\nPassword {password}")
+        response = API.login_request('/is_register', login, password)
+        if response == "true":
             DelMiaApp.get_running_app().root.current = "Top"
-            sqlite_update_only("settings", {"login": login, "password": password})
+            # sqlite_update_only("settings", {"login": login, "password": password})
+            No = self.LId(get_data("/api/Driver"), login)
+            sqlite_update_table("settings", {'id': 1,
+                                             'login': login,
+                                             'password': password,
+                                             'text_size': 0.3,
+                                             'Check_internet': "http://www.google.com",
+                                             'Connect_login': "LogisticsApp",
+                                             'Connect_password': "GSFHrs6itd6$%#$Ewg54e",
+                                             'Address1': "62.80.175.116",
+                                             'Address2': "80.91.189.6",
+                                             'Address3': "88.198.110.32",
+                                             'Address4': " ",
+                                             'DriverId': No})
         else:
             error_text = "Не корректный логин или пароль"
 
@@ -126,8 +154,9 @@ class BoxLayoutExample(BoxLayout):
     from SQLite.SQLite_CRUD_Querry.SQLite_Update import sqlite_write_table, sqlite_update_table
     from Module.Weather.GetWeather import weather
     first_open = False
-    write_login = ''
-    write_password = ''
+    write_login = ""
+    write_password = ""
+
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -141,6 +170,7 @@ class BoxLayoutExample(BoxLayout):
             Clock.schedule_interval(self.start_screen, 0.1)
         # 60 second * 9 minute
         Clock.schedule_interval(self.update_token, (60 * 1.5))
+        Clock.schedule_interval(self.get_order_driver, 1)
 
     def start_screen(self, dt):
         if not self.first_open:
@@ -149,10 +179,10 @@ class BoxLayoutExample(BoxLayout):
             if SQLite_Read.sqlite_count("settings") != 0:
                 login = SQLite_Read.sqlite_read_col_in_table("settings", "login")
                 password = SQLite_Read.sqlite_read_col_in_table("settings", "password")
-                response = API.get_token('/is_register', login, password)
+                response = API.login_request('/is_register', login, password)
                 print(login, password)
                 print("resp", response)
-                if response == "True":
+                if response == "true":
                     DelMiaApp.get_running_app().root.current = "Top"
 
     def update_token(self, dt):
@@ -162,7 +192,7 @@ class BoxLayoutExample(BoxLayout):
         token_logistics = API.get_token("/token",
                                         sqlite_read_col_in_table("settings", "Connect_login"),
                                         sqlite_read_col_in_table("settings", "Connect_password"))
-        print("t",token_logistics)
+        print("t", token_logistics)
         dic_data.update({'id': 0, 'token': token_logistics, 'datetime_write': datetime.datetime.now()})
         sqlite_update_table('token', dic_data)
         # print('All token: ', API.get_token_out_sqlite())
@@ -173,6 +203,81 @@ class BoxLayoutExample(BoxLayout):
             self.employee_shift = 'Стать на смену'
         else:
             self.employee_shift = 'Выйти со смены'
+        # self.get_order_driver()
+
+    def get_order_driver(self,dt):
+        # {"deliveryOrderId": 4,
+        # "receptNo": "00000D1S03000576009",
+        # "phone": "0952759717",
+        # "name": "Нариман",
+        #  "preOrder": false,
+        #  "orderDateTime": "2021-09-30T15:25:09", """время на которое доставить заказ """
+        #  "appointmentDateTime": "0001-01-01T00:00:00",
+        #  "appointment": false,
+        #  "amount": 426.00,
+        #  "estimatedOrderReadinessTime": 0.00,
+        #  "createdDateTime": "2021-09-30T14:24:04.46",
+        #  "streetName": "13 ДМИТРИЕВСКАЯ УЛ.",
+        #  "city": null,
+        #  "direction": "вход со двора,  с 500",
+        #  "externalNo": "MPS03",
+        #  "streetNo": "",
+        #  "approximateTimeOrderReadyRestaurant": "0001-01-01T00:00:00",
+        #  "waitingTimeOrderByClient": "0001-01-01T00:00:00",
+        #  "actualTimeOrderDeliveryByDriver": "0001-01-01T00:00:00",
+        #  "actualTimeStartDelivery": "0001-01-01T00:00:00",
+        #  "actualTimeOrderReadiness": "0001-01-01T00:00:00",
+        #  "sendCookingTime": "0001-01-01T00:00:00",
+        #  "scheduledDeliveryTime": "0001-01-01T00:00:00",
+        #  "additionalData": null,
+        #  "incidentType": 0,
+        #  "tenderType": 0,
+        #  "tenderStatus": 1,
+        #  "deliveryOrderStatus": 7,""" """
+        #  "incidentDescription": null,
+        #  "restaurantId": 5,
+        #  "restaurantName": "Пiцерiя Перемоги 9-б",
+        #  "deliveryOrderRoute": null,
+        #  "driverId": null,
+        #  "driverName": null}
+
+        address = f"/api/DeliveryOrder/{SQLite_Read.sqlite_read_col_in_table('settings', 'DriverId')}"
+        # print(get_data(address))
+        first_order = json.loads(get_data(address))
+
+        # for lst in first_order:
+        for key, values in first_order.items():
+            if key == "receptNo":
+                order_no = values
+            if key == "phone":
+                client_phone = values
+            if key == "name":
+                client_name = values
+            if key == "streetName":
+                address_client = values
+            if key == "restaurantName":
+                address_store = values
+
+            if key == "deliveryOrderStatus":
+                # "go too store"
+                if values == 4:
+                    # self.address_drive = address_store
+                    # self.order_number = ""
+                    # self.client_information = ""
+                    self.type_address = f'Вас ожидают по адресу: {address_store}'
+                    self.order_number = f'Заказ: {order_no}'
+                    self.inform = ""
+                # "go too address"
+                else:
+                    # self.address_drive = address_client
+                    # self.order_number = order_no
+                    # self.client_information = client_name + " " + client_phone
+                    self.type_address = f'Вас ожидают по адресу: {address_client}'
+                    self.order_number = f'Заказ: {order_no}'
+                    self.inform = f'Данные клиента: {client_name + " " + client_phone}'
+        # print(self.type_address)
+        # print(self.order_number)
+        # print(self.inform)
 
     def load_sound(self):
         SoundLoader.load("")
@@ -237,16 +342,27 @@ class BoxLayoutExample(BoxLayout):
     else:
         btry = '0%'
 
+    # glat = 0
+    # glon = 0
     glat = 50.4487081
     glon = 30.561708
     weather(glat, glon)
     print(sqlite_read_col_in_table('weather', 'temp'))
     weather_now = StringProperty(f"{sqlite_read_col_in_table('weather', 'temp')} \u00b0C")
     employee_shift = StringProperty(f'Стать на смену')
-    connect_gps_status = StringProperty(f'GPS: ш({glat}) д({glon})')
-    connect_status_server = StringProperty(f'Status: {gps}')
+    # connect_gps_status = StringProperty(f'GPS: ш({glat}) д({glon})')
+    connect_gps_status = StringProperty(f'GPS: ш({0}) д({0})')
+    # connect_status_server = StringProperty(f'Status: {gps}')
+    connect_status_server = StringProperty(f'Status: {""}')
     connect_status_internet = StringProperty(f'Internet: {int_st}')
     battery_status = StringProperty(f'Battery: {btry}')
+    type_address = StringProperty(f'Вас ожидают по адресу: {""}')
+    order_number = StringProperty(f'Заказ: {""}')
+    inform = StringProperty(f'Данные клиента: {""}')
+    time_delivery = StringProperty(f'Время: {""}')
+    # self.address_drive = address_store
+    # self.order_number = ""
+    # self.client_information = ""
 
     print(sqlite_read_col_in_table('weather', 'temp'))
     # print()

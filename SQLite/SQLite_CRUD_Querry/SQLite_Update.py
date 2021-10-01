@@ -93,7 +93,7 @@ def sqlite_update_only(table: str, data_dic: dict):
             else:
                 query = f"{query}{str(key)} = {str(values)}"
             i += 1
-        cursor.execute(f"UPDATE {table} SET {query} WHERE {id};")
+        cursor.execute(f"UPDATE OR INSERT {table} SET {query} WHERE {id};")
         sqlite_connection.commit()
         # print(f"Запись успешно вставлена в таблицу {table} ", cursor.rowcount)
         cursor.close()

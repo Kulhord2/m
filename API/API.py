@@ -22,6 +22,17 @@ def get_token(address: str, login: str, password: str):
     return session.text
 
 
+def get_data(address: str):
+    aut = ("Bearer " + get_token_out_sqlite())
+    headers = {"accept": "*/*",
+               "Authorization": aut,
+               "Content-Type": "application/json"}
+    response = requests.get(f"{get_server_ip()}{address}", headers=headers)
+    print(response.status_code)
+    print(response.text)
+    return response.text
+
+
 def get_headers():
     t = get_token_out_sqlite()
     headers = {
@@ -55,7 +66,19 @@ def send_gps_driver(address: str, driver: int, lat: float, lon: float):
 
 def send_request(address: str, data: str):
     # print(address)
+    print(f"request: {get_server_ip()}{address}{json.dumps(data)}{get_headers_4_token()}")
     response = requests.post(f'{get_server_ip()}{address}', data=json.dumps(data), headers=get_headers_4_token())
+    # response = requests.put(f'{get_server_ip()}{address}', data=data, headers=get_headers_4_token())
+    print(response.status_code)
+    print(f"response: {response.text}")
+    print(time.time())
+    return response.text
+
+
+def login_request(address: str, login: str, password: str):
+    # print(address)
+    response = requests.post(f'{get_server_ip()}{address}?staffId={login}&password={password}',
+                             headers=get_headers_4_token())
     # response = requests.put(f'{get_server_ip()}{address}', data=data, headers=get_headers_4_token())
     print(response.status_code)
     print(f"response: {response.text}")

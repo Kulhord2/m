@@ -93,7 +93,8 @@ def create_table():
             Address1 TEXT ,
             Address2 TEXT ,
             Address3 TEXT ,
-            Address4 TEXT 
+            Address4 TEXT ,
+            DriverId NUMERIC
             );
             """
     if sqlite_create_table(table) == 'ok':
