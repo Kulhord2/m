@@ -89,7 +89,13 @@ fullscreen = 0
 
 
 # (list) Permissions
-#android.permissions = INTERNET
+android.permissions = INTERNET
+android.permissions = ACCESS_FINE_LOCATION
+android.permissions = ACCESS_LOCATION_EXTRA_COMMANDS
+android.permissions = BATTERY_STATS
+android.permissions = BIND_CONTROLS
+android.permissions = VIBRATE
+android.permissions = WRITE_GSERVICES
 
 # (list) features (adds uses-feature -tags to manifest)
 #android.features = android.hardware.usb.host
