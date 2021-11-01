@@ -243,38 +243,39 @@ class BoxLayoutExample(BoxLayout):
 
         address = f"/api/DeliveryOrder/{SQLite_Read.sqlite_read_col_in_table('settings', 'DriverId')}"
         # print(get_data(address))
-        first_order = json.loads(get_data(address))
+        print(get_data(address))
+        # first_order = json.loads(get_data(address))
 
         # for lst in first_order:
-        for key, values in first_order.items():
-            if key == "receptNo":
-                order_no = values
-            if key == "phone":
-                client_phone = values
-            if key == "name":
-                client_name = values
-            if key == "streetName":
-                address_client = values
-            if key == "restaurantName":
-                address_store = values
-
-            if key == "deliveryOrderStatus":
-                # "go too store"
-                if values == 4:
-                    # self.address_drive = address_store
-                    # self.order_number = ""
-                    # self.client_information = ""
-                    self.type_address = f'Вас ожидают по адресу: {address_store}'
-                    self.order_number = f'Заказ: {order_no}'
-                    self.inform = ""
-                # "go too address"
-                else:
-                    # self.address_drive = address_client
-                    # self.order_number = order_no
-                    # self.client_information = client_name + " " + client_phone
-                    self.type_address = f'Вас ожидают по адресу: {address_client}'
-                    self.order_number = f'Заказ: {order_no}'
-                    self.inform = f'Данные клиента: {client_name + " " + client_phone}'
+        # for key, values in first_order.items():
+        #     if key == "receptNo":
+        #         order_no = values
+        #     if key == "phone":
+        #         client_phone = values
+        #     if key == "name":
+        #         client_name = values
+        #     if key == "streetName":
+        #         address_client = values
+        #     if key == "restaurantName":
+        #         address_store = values
+        #
+        #     if key == "deliveryOrderStatus":
+        #         # "go too store"
+        #         if values == 4:
+        #             # self.address_drive = address_store
+        #             # self.order_number = ""
+        #             # self.client_information = ""
+        #             self.type_address = f'Вас ожидают по адресу: {address_store}'
+        #             self.order_number = f'Заказ: {order_no}'
+        #             self.inform = ""
+        #         # "go too address"
+        #         else:
+        #             # self.address_drive = address_client
+        #             # self.order_number = order_no
+        #             # self.client_information = client_name + " " + client_phone
+        #             self.type_address = f'Вас ожидают по адресу: {address_client}'
+        #             self.order_number = f'Заказ: {order_no}'
+        #             self.inform = f'Данные клиента: {client_name + " " + client_phone}'
         # print(self.type_address)
         # print(self.order_number)
         # print(self.inform)

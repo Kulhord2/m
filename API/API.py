@@ -5,9 +5,8 @@ import requests
 
 
 def get_server_ip():
-    return 'http://192.168.100.25:8008'
-
-
+    return 'http://88.198.110.35:8008'
+    # return 'http://192.168.100.25:8008'
 def get_token_out_sqlite():
     from SQLite.SQLite_CRUD_Querry.SQLite_Read import sqlite_read_col_in_table
     result = sqlite_read_col_in_table('token', 'token').replace('"', '')
